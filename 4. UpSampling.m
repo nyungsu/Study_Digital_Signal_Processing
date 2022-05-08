@@ -3,6 +3,7 @@
 f = 3*10^6; % 3M
 fs = 30*10^6; % 30M
 
+
 Ts = 1/fs;
 
 t = 0 : Ts : 5/f; 
@@ -24,28 +25,27 @@ N = length(t);
 N_U = length(tu);
 
 k_Y = (0:N-1)*fs/N;
-k_U = (0:N-1)*fs/N_U;
+k_U = (0:N_U-1)*2*fs/N_U;
 
 Y = abs(fft(y))/length(y);
 Y_UP = abs(fft(y_up))/length(y_up);
 
 figure(2)
-subplot(2,1,1),plot(t,Y)
-subplot(2,1,2),plot(tu,Y_UP(1:101))
+subplot(2,1,1),plot(k_Y,Y)
+subplot(2,1,2),plot(k_U,Y_UP(1:101))
 
 % filter
-fc = 50*10^6;             % cut-off freq = 5M
-FC =  fc/(2*fs);          % Á¤±ÔÈ­
+fc = 10*10^6;             % cut-off freq = 10M
+FC = fc /(2*fs);          % 1ë¡œ ì •ê·œí™”
 n = -172 : 172;           % n for hamming window 
-N= length(n);
-h = FC*sinc(FC*n);        % 5M¿¡¼­ ±ğÀ» ÇÊÅÍ ½Ã°£Ãà ¼±¾ğ
-w = hamming(N);
-w = w';
-H = h.*w;                 % ÇØ¹Ö °öÇØÁØ 5M¿¡¼­ ±ğÀ» ÇÊÅÍ
-result = conv(H,y_up);    % ½Ã°£ Ãà¿¡¼­ conv
+N = length(n);
+h = 2*FC*sinc(2*FC*n);    % 10Mì—ì„œ ê¹ì„ í•„í„° ì‹œê°„ì¶• ì„ ì–¸
+w = hamming(N)';
+H = h.*w;                 % í•´ë° ê³±í•´ì¤€ 10Mì—ì„œ ê¹ì„ í•„í„°
+result = conv(H,y_up);    % ì‹œê°„ ì¶•ì—ì„œ conv
 
-R = abs(fft(result)/length(result));
-k_R=(0 : length(result)-1)*2*fs/length(result);
+R = abs(fft(result))/length(result);
+k_R=(0 : length(result)-1)*(2*fs)/length(result);
 
 figure(3)
 plot(k_R,R);
